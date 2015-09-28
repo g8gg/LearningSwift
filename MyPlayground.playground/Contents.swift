@@ -50,6 +50,35 @@ let one: UInt8 = 1
 let twoThousandAndOne = twoThousand + UInt16(one)
 //目标常量的类型被推断为UInt16,因为它是两个UInt16值的和
 
+//整数和浮点数的转换必须显式指定类型
+let three = 3
+let pointOneFourOneFiveNine = 0.14159
+let pi = Double(three) + pointOneFourOneFiveNine // pi 等于 3.14159,所以被推测为 Double 类型
+let integerPi = Int(pi)
+//integerPi 等于 3,所以被推测为 Int 类型
+
+//结合数字类常量和变量不同于结合数字类字面量
+//字面量 3 可以直接和字面量 0.14159 相加,因为数字字面量本身没有明确的类型，它们的类型只在编译器需要求值的时候被推测
+//注意:
+//结合数字类常量和变量不同于结合数字类字面量。字面量 3 可以直接和字面量 0.14159 相加,因为数字字面量本身没有明确的类型。
+//它们的类型只在编译器需要求值的时候被推测
+
+typealias AudioSample = UInt16
+var maxAmplitudeFound = AudioSample.min // maxAmplitudeFound 现在是 0
+
+let orangesAreOrange = true
+let turnipsAreDelicious = false
+
+if turnipsAreDelicious { print("Mmm, tasty turnips!")
+} else {
+    print("Eww, turnips are horrible.")
+}
+
+//tuples
+let http404Error = (404, "Not Found")
+let (statusCode, statusMessage) = http404Error
+print("The status code is \(statusCode)")
+print("The status message is \(statusMessage)")
 
 
 
