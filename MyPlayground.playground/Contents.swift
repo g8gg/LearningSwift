@@ -31,7 +31,6 @@ let hexadecimalInteger = 0x11 // 十六进制的17
 let decimalDouble = 12.1875
 let exponentDouble = 1.21875e1
 let hexadecimalDouble = 0xC.3p0
-
 let paddedDouble = 000123.456
 let oneMillion = 1_000_000
 let justOverOneMillion = 1_000_000.000_000_1
@@ -59,10 +58,10 @@ let integerPi = Int(pi)
 
 //结合数字类常量和变量不同于结合数字类字面量
 //字面量 3 可以直接和字面量 0.14159 相加,因为数字字面量本身没有明确的类型，它们的类型只在编译器需要求值的时候被推测
-//注意:
-//结合数字类常量和变量不同于结合数字类字面量。字面量 3 可以直接和字面量 0.14159 相加,因为数字字面量本身没有明确的类型。
-//它们的类型只在编译器需要求值的时候被推测
-
+/*注意:
+    结合数字类常量和变量不同于结合数字类字面量。字面量 3 可以直接和字面量 0.14159 相加,因为数字字面量本身没有明确的类型。
+    它们的类型只在编译器需要求值的时候被推测
+*/
 typealias AudioSample = UInt16
 var maxAmplitudeFound = AudioSample.min // maxAmplitudeFound 现在是 0
 
@@ -76,9 +75,93 @@ if turnipsAreDelicious { print("Mmm, tasty turnips!")
 
 //tuples
 let http404Error = (404, "Not Found")
+//内容分解decompose
 let (statusCode, statusMessage) = http404Error
 print("The status code is \(statusCode)")
 print("The status message is \(statusMessage)")
+//忽略的部分用_标记
+let (justTheStatusCode, _) = http404Error
+print("The status code is \(justTheStatusCode)")
+//下标
+print("The status code is \(http404Error.0)")
+print("The status message is \(http404Error.1)")
+//直接命名
+let http200Status = (statusCode: 200, description: "OK")
+print("The status code is \(http200Status.statusCode)")
+print("The status message is \(http200Status.description)")
+/*
+注意:
+    元组在临时组织值的时候很有用,但是并不适合创建复杂的数据结构。如果你的数据结构并不是临时使用,请使
+用类或者结构体而不是元组。
+*/
+
+
+//可选类型optionals
+
+var serverResponseCode: Int? = 404 // serverResponseCode 包含一个可选的 Int 值 404
+serverResponseCode = nil // serverResponseCode 现在不包含值
+//var serverRepCoe: Int = 404
+//serverRepCoe = nil
+/*
+注意:
+    nil不能用于非可选的常量和变量。如果你的代码中有常量或者变量需要处理值缺失的情况,请把它们声明成对
+应的可选类型
+*/
+var surveyAnswer: String? // surveyAnswer 被自动设置为 nil
+/*
+注意:
+    Swift 的 nil 和 Objective-C 中的 nil 并不一样。在 Objective-C 中, nil 是一个指向不存在对象的指针。
+在 Swift 中, nil 不是指针——它是一个确定的值,用来表示值缺失。任何类型的可选状态都可以被设置为 nil ,不只是对象类型。
+*/
+
+var  convertedNumber: Int? = 100
+if convertedNumber != nil {
+    print("convertedNumber has an integer value of \(convertedNumber!).")
+}
+
+let possibleNumber = "123a"
+if let actualNumber = Int(possibleNumber) {
+    print("\'\(possibleNumber)\' has an integer value of \(actualNumber)")
+} else {
+    print("\'\(possibleNumber)\' could not be converted to an integer")
+}
+
+//implicitly optional
+let possibleString: String? = "An optional string."
+let forcedString: String = possibleString! // 需要惊叹号来获取值
+let assumedString: String! = "An implicitly unwrapped optional string."
+let implicitString: String = assumedString // 不需要感叹号
+
+if(assumedString != nil ) {
+    print(implicitString)
+}
+if let definiteString = assumedString {
+    print(definiteString)
+}
+/*
+注意:
+    如果一个变量之后可能变成 nil 的话请不要使用隐式解析可选类型。如果你需要在变量的生命周期中判断是否是
+nil 的话,请使用普通可选类型。
+*/
+
+
+//错误处理 error handling
+func canThrowAnErrow() throws { // 这个函数有可能抛出错误
+}
+
+do {
+    try canThrowAnErrow() // 没有错误消息抛出
+} catch {
+    // 有一个错误消息抛出
+}
+
+/*
+let age = -1
+assert(age>0,"Age must be above zero.")
+*/
+
+
+
 
 
 
