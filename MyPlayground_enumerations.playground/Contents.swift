@@ -102,7 +102,7 @@ print(possiblePlanet == PlanetNew.Uranus)
 
 
 //递归枚举(Recursive Enumerations)
-//表示它的枚举中,有一个或多个枚举成员拥有该枚举的 其他成员作为相关值。使用递归枚举时,编译器会插入一个中间层。你可以在枚举成员前加上 indirect 来表示这 成员可递归。
+//表示它的枚举中,有一个或多个枚举成员拥有该枚举的其他成员作为相关值。使用递归枚举时,编译器会插入一个中间层。你可以在枚举成员前加上 indirect 来表示这成员可递归。
 enum ArithmeticExpression {
     case Number(Int)
     indirect case Addition(ArithmeticExpression, ArithmeticExpression)
