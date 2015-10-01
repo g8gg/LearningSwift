@@ -461,7 +461,164 @@ let counter1 = CounterNew()
 counter1.incrementBy(5, numberOfTimes: 3) // counter1 的值现在是 15
 print(counter1.count)
 
+//修改方法的外部参数名称(Modifying External Parameter Name Behavior for Methods)
+//有时为方法的第一个参数提供一个外部参数名称是非常有用的,尽管这不是默认的行为。你可以自己添加一个显式的外部名称或者用一个井号( # )作为第一个参数的前缀来把这个局部名称当作外部名称使用。
+//相反,如果你不想为方法的第二个及后续的参数提供一个外部名称,可以通过使用下划线( _ )作为该参数的显式外部名称,这样做将覆盖默认行为。
+
+/**
+*  self 属性(The self Property)
+*/
+//类型的每一个实例都有一个隐含属性叫做 self , self 完全等同于该实例本身。你可以在一个实例的实例方法中 使用这个隐含的 self 属性来引用当前实例。
+/** 上面例子中的 increment 方法还可以这样写:
+*  func increment() { self.count++
+}
+使用这条规则的主要场景是实例方法的某个参数名称与实例的某个属性名称相同的时候。在这种情况下,参数名 称享有优先权,并且在引用属性时必须使用一种更严格的方式。这时你可以使用 self 属性来区分参数名称和属性 名称。
+*/
+
+
+//下面的例子中, self 消除方法参数 x 和实例属性 x 之间的歧义:
+struct MyPoint {
+    var x = 0.0, y = 0.0
+    func isToTheRightOfX(x: Double) -> Bool {
+        return self.x > x }
+}
+let somePoint = MyPoint(x: 4.0, y: 5.0)
+if somePoint.isToTheRightOfX(1.0) {
+    print("This point is to the right of the line where x == 1.0")
+}
 
 
 
 
+//在实例方法中修改值类型(Modifying Value Types from Within Instance Methods)
+//结构体和枚举是值类型。一般情况下,值类型的属性不能在它的实例方法中被修改。
+//但是,如果你确实需要在某个具体的方法中修改结构体或者枚举的属性,你可以选择 变异(mutating) 这个方 法,然后方法就可以从方法内部改变它的属性;并且它做的任何改变在方法结束时还会保留在原始结构中。方法还可以给它隐含的 self 属性赋值一个全新的实例,这个新实例在方法结束后将替换原来的实例。
+struct PointNew {
+    var x = 0.0, y = 0.0
+    mutating func moveByX(deltaX: Double, y deltaY: Double) {
+        x += deltaX
+        y += deltaY
+    }
+}
+var somePointNew = PointNew(x: 1.0, y: 1.0)
+somePointNew.moveByX(2.0, y: 3.0)
+print("The point is now at (\(somePointNew.x), \(somePointNew.y))")
+//上面的 Point 结构体定义了一个变异方法(mutating method) moveByX(_:y:) 用来移动点。 moveByX 方法 在被调用时修改了这个点,而不是返回一个新的点。方法定义时加上 mutating 关键字,这才让方法可以修改值 类型的属性。
+
+
+//注意:不能在结构体类型常量上调用变异方法,因为常量的属性不能被改变,即使想改变的是常量的变量属性也 不行
+//let fixedPoint = PointNew(x: 3.0, y: 3.0)
+//fixedPoint.moveByX(2.0, y: 3.0)
+// 这里将会抛出一个错误
+
+
+//在变异方法中给self赋值(Assigning to self Within a Mutating Method)
+struct PointRenew {
+    var x = 0.0, y = 0.0
+    mutating func moveByX(deltaX: Double, y deltaY: Double) {
+        self = PointRenew(x: x + deltaX, y: y + deltaY) }
+}
+
+var pointRenew=PointRenew(x:1.0, y:1.0)
+pointRenew.moveByX(12.0, y: 12.0)
+print(pointRenew.x,pointRenew.y)
+//新版的变异方法 moveByX(_:y:) 创建了一个新的结构(它的 x 和 y 的值都被设定为目标值)。调用这个版本的 方法和调用上个版本的最终结果是一样的。
+
+
+//枚举的变异方法可以把 self 设置为相同的枚举类型中不同的成员:
+enum TriStateSwitch {
+    case Off, Low, High
+    mutating func next() {
+        switch self {
+            case Off:
+                self = Low
+            case Low:
+                self = High
+            case High:
+                self = Off
+        }
+    }
+}
+var ovenLight = TriStateSwitch.Low
+ovenLight.next()
+// ovenLight 现在等于 .High 
+ovenLight.next()
+// ovenLight 现在等于 .Off
+//上面的例子中定义了一个三态开关的枚举。每次调用 next 方法时,开关在不同的电源状态( Off , Low ,High )之前循环切换。
+
+
+//类型方法 (Type Methods)
+//也可以定义类型本身调用的方法,这种方法就叫做类型方法。声明 结构体和枚举的类型方法,在方法的 func 关键字之前加上关键字 static 。类可能会用关键字 class 来允许子类 重写父类的实现方法。
+//注意:
+//在 Objective-C 里面,你只能为 Objective-C 的类定义类型方法(type-level methods)。在 Swift 中,你 可以为所有的类、结构体和枚举定义类型方法:每一个类型方法都被它所支持的类型显式包含。
+
+class MySomeClass {
+    class func someTypeMethod() {
+        // type method implementation goes here 
+        print("Type Method Invoked")
+    }
+}
+MySomeClass.someTypeMethod()
+//在类型方法的方法体(body)中, self 指向这个类型本身,而不是类型的某个实例。对于结构体和枚举来 说,这意味着你可以用 self 来消除静态属性和静态方法参数之间的歧义(类似于我们在前面处理实例属性和实例 方法参数时做的那样)。
+
+
+
+
+
+//一般来说,任何未限定的方法和属性名称,将会来自于本类中另外的类型级别的方法和属性。一个类型方法可以调用本类中另一个类型方法的名称,而无需在方法名称前面加上类型名称的前缀。同样,结构体和枚举的类型方法也能够直接通过静态属性的名称访问静态属性,而不需要类型名称前缀。
+
+/**
+*  下面的例子定义了一个名为 LevelTracker 结构体。它监测玩家的游戏发展情况(游戏的不同层次或阶段)。这 是一个单人游戏,但也可以存储多个玩家在同一设备上的游戏信息。
+游戏初始时,所有的游戏等级(除了等级 1)都被锁定。每次有玩家完成一个等级,这个等级就对这个设备上的所 有玩家解锁。 LevelTracker 结构体用静态属性和方法监测游戏的哪个等级已经被解锁。它还监测每个玩家的当 前等级。
+*/
+
+
+struct LevelTracker {
+    static var highestUnlockedLevel = 1
+    static func unlockLevel(level: Int) {
+        if level > highestUnlockedLevel {
+            highestUnlockedLevel = level }
+    }
+    static func levelIsUnlocked(level: Int) -> Bool {
+        return level <= highestUnlockedLevel
+    }
+    var currentLevel = 1
+    mutating func advanceToLevel(level: Int) -> Bool {
+        if LevelTracker.levelIsUnlocked(level) {
+            currentLevel = level
+            return true
+        } else {
+            return false
+        }
+    }
+}
+//LevelTracker 监测玩家的已解锁的最高等级。这个值被存储在静态属性 highestUnlockedLevel 中。
+//LevelTracker 还定义了两个类型方法与 highestUnlockedLevel 配合工作。第一个类型方法是 unlockLevel :一旦新等级被解锁,它会更新 highestUnlockedLevel 的值。第二个类型方法是 levelIsUnlocked :如果某个 给定的等级已经被解锁,它将返回 true 。(注意:尽管我们没有使用类似 LevelTracker.highestUnlockedLeve l 的写法,这个类型方法还是能够访问静态属性 highestUnlockedLevel )
+//除了静态属性和类型方法, LevelTracker 还监测每个玩家的进度。它用实例属性 currentLevel 来监测玩家当前 的等级。
+//为了便于管理 currentLevel 属性, LevelTracker 定义了实例方法 advanceToLevel 。这个方法会在更新 curre ntLevel 之前检查所请求的新等级是否已经解锁。 advanceToLevel 方法返回布尔值以指示是否能够设置 curren tLevel 。
+
+//下面, Player 类使用 LevelTracker 来监测和更新每个玩家的发展进度:
+class Player {
+    var tracker = LevelTracker()
+    let playerName: String
+    func completedLevel(level: Int) {
+        LevelTracker.unlockLevel(level + 1)
+        tracker.advanceToLevel(level + 1) }
+    init(name: String) {
+        playerName = name
+    }
+}
+//Player 类创建一个新的 LevelTracker 实例来监测这个用户的进度。它提供了 completedLevel 方法:一旦玩家 完成某个指定等级就调用它。这个方法为所有玩家解锁下一等级,并且将当前玩家的进度更新为下一等级。(我 们忽略了 advanceToLevel 返回的布尔值,因为之前调用 LevelTracker.unlockLevel 时就知道了这个等级已经 被解锁了)。
+
+//你还可以为一个新的玩家创建一个 Player 的实例,然后看这个玩家完成等级一时发生了什么:
+var player = Player(name: "Argyrios")
+player.completedLevel(1)
+print("highest unlocked level is now \(LevelTracker.highestUnlockedLevel)")
+
+//如果你创建了第二个玩家,并尝试让他开始一个没有被任何玩家解锁的等级,那么这次设置玩家当前等级的尝试将会失败:
+player = Player(name: "Beto")
+if player.tracker.advanceToLevel(6) {
+    print("player is now on level 6") }
+else {
+    print("level 6 has not yet been unlocked")
+}
