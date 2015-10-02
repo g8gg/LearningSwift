@@ -327,7 +327,7 @@ stepCounter.totalSteps = 896
 */
 //实例的属性属于一个特定类型实例,每次类型实例化后都拥有自己的一套属性值,实例之间的属性相互独立。
 //也可以为类型本身定义属性,不管类型有多少个实例,这些属性都只有唯一一份。这种属性就是类型属性。
-//类型属性用于定义特定类型所有实例共享的数据,比如所有实例都能用的一个常量(就像 C 语言中的静态常 量),或者所有实例都能访问的一个变量(就像 C 语言中的静态变量)。
+//类型属性用于定义特定类型所有实例共享的数据,比如所有实例都能用的一个常量(就像 C 语言中的静态常量),或者所有实例都能访问的一个变量(就像 C 语言中的静态变量)。
 //值类型的存储型类型属性可以是变量或常量,计算型类型属性跟实例的计算属性一样只能定义成变量属性。
 //注意:
 //跟实例的存储属性不同,必须给存储型类型属性指定默认值,因为类型本身无法在初始化过程中使用构造器给类型属性赋值。
@@ -335,7 +335,8 @@ stepCounter.totalSteps = 896
 //类型属性语法
 //在 C 或 Objective-C 中,与某个类型关联的静态常量和静态变量,是作为全局(global)静态变量定义的。
 //但是在 Swift 编程语言中,类型属性是作为类型定义的一部分写在类型最外层的花括号内,因此它的作用范围也就在类型支持的范围内。
-//使用关键字 static 来定义类型属性。在为类(class)定义计算型类型属性时,可以使用关键字 class 来支持子 类对父类的实现进行重写。下面的例子演示了存储型和计算型类型属性的语法:
+//使用关键字 static 来定义类型属性。在为类(class)定义计算型类型属性时,可以使用关键字 class 来支持子类对父类的实现进行重写。
+//下面的例子演示了存储型和计算型类型属性的语法:
 struct SomeStructureNew {
     static var storedTypeProperty = "Some value."
     static var computedTypeProperty: Int {
@@ -468,11 +469,14 @@ print(counter1.count)
 /**
 *  self 属性(The self Property)
 */
-//类型的每一个实例都有一个隐含属性叫做 self , self 完全等同于该实例本身。你可以在一个实例的实例方法中 使用这个隐含的 self 属性来引用当前实例。
+//类型的每一个实例都有一个隐含属性叫做 self , 
+//self 完全等同于该实例本身。你可以在一个实例的实例方法中 使用这个隐含的 self 属性来引用当前实例。
+
 /** 上面例子中的 increment 方法还可以这样写:
-*  func increment() { self.count++
-}
-使用这条规则的主要场景是实例方法的某个参数名称与实例的某个属性名称相同的时候。在这种情况下,参数名 称享有优先权,并且在引用属性时必须使用一种更严格的方式。这时你可以使用 self 属性来区分参数名称和属性 名称。
+*  func increment() { 
+    self.count++
+    }
+使用这条规则的主要场景是实例方法的某个参数名称与实例的某个属性名称相同的时候。在这种情况下,参数名 称享有优先权,并且在引用属性时必须使用一种更严格的方式。这时你可以使用 self 属性来区分参数名称和属性名称。
 */
 
 
@@ -568,7 +572,7 @@ MySomeClass.someTypeMethod()
 //一般来说,任何未限定的方法和属性名称,将会来自于本类中另外的类型级别的方法和属性。一个类型方法可以调用本类中另一个类型方法的名称,而无需在方法名称前面加上类型名称的前缀。同样,结构体和枚举的类型方法也能够直接通过静态属性的名称访问静态属性,而不需要类型名称前缀。
 
 /**
-*  下面的例子定义了一个名为 LevelTracker 结构体。它监测玩家的游戏发展情况(游戏的不同层次或阶段)。这 是一个单人游戏,但也可以存储多个玩家在同一设备上的游戏信息。
+*  下面的例子定义了一个名为 LevelTracker 结构体。它监测玩家的游戏发展情况(游戏的不同层次或阶段)。这是一个单人游戏,但也可以存储多个玩家在同一设备上的游戏信息。
 游戏初始时,所有的游戏等级(除了等级 1)都被锁定。每次有玩家完成一个等级,这个等级就对这个设备上的所 有玩家解锁。 LevelTracker 结构体用静态属性和方法监测游戏的哪个等级已经被解锁。它还监测每个玩家的当 前等级。
 */
 
@@ -612,13 +616,18 @@ class Player {
 
 //你还可以为一个新的玩家创建一个 Player 的实例,然后看这个玩家完成等级一时发生了什么:
 var player = Player(name: "Argyrios")
-player.completedLevel(1)
+player.completedLevel(3)
 print("highest unlocked level is now \(LevelTracker.highestUnlockedLevel)")
+if player.tracker.advanceToLevel(4) {
+    print("player is now on level 4") }
+else {
+    print("level 4 has not yet been unlocked")
+}
 
 //如果你创建了第二个玩家,并尝试让他开始一个没有被任何玩家解锁的等级,那么这次设置玩家当前等级的尝试将会失败:
 player = Player(name: "Beto")
-if player.tracker.advanceToLevel(6) {
-    print("player is now on level 6") }
+if player.tracker.advanceToLevel(5) {
+    print("player is now on level 5") }
 else {
-    print("level 6 has not yet been unlocked")
+    print("level 5 has not yet been unlocked")
 }
