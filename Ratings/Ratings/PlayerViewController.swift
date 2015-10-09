@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PlayersViewControllerTableViewController: UITableViewController {
+class PlayersViewController: UITableViewController {
     var players:[Player] = playersData
     
 
@@ -49,8 +49,27 @@ class PlayersViewControllerTableViewController: UITableViewController {
             return cell
     }
     
+    @IBAction func cancelToPlayersViewController(segue:UIStoryboardSegue) {
+    }
     
-     
+    @IBAction func savePlayerDetail(segue:UIStoryboardSegue) {
+        if let playerDetailsViewController = segue.sourceViewController as? PlayerDetailsViewController {
+            
+            //add the new player to the players array
+            if let player = playerDetailsViewController.player {
+                players.append(player)
+                
+                //update the tableView
+                let indexPath = NSIndexPath(forRow: players.count-1, inSection: 0)
+                tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                /**
+                This obtains a reference to the PlayerDetailsViewController via the segue reference passed to the method. It uses that to add the new Player object to the array of players used in the datasource. Then it tells the table view that a new row was added (at the bottom), because the table view and its data source must always be in sync.
+                
+                You could have just done tableView.reloadData() but it looks nicer to insert the new row with an animation. UITableViewRowAnimation.Automatic automatically picks the proper animation, depending on where you insert the new row. Very handy.
+                */
+            }
+        }
+    }
     
     
     /*
