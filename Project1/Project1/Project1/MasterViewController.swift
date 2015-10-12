@@ -40,6 +40,7 @@ class MasterViewController: UITableViewController {
 
        // MARK: - Segues
 
+    //This gets called when a segue is about to execute, and gives you a chance to configure the new view controller with information for it to use.
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
